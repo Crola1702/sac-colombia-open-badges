@@ -33,6 +33,11 @@ function render({ credential: c, verified, revoked, revoked_reason, errors }) {
   issuer.textContent = c.issuer.name;
   if (c.issuer.url) issuer.href = c.issuer.url;
   if (a.image?.id) { $("image").src = a.image.id; $("image").alt = a.name; $("image").hidden = false; }
+  if (a.image?.id) {
+    // shortcut: assumes each SVG badge has a PNG twin at the same path, true for web/badges/; revisit if images move elsewhere.
+    const png = a.image.id.replace(/\.svg$/i, ".png");
+    Object.assign($("image-download"), { href: png, download: `insignia-${id}.png`, hidden: false });
+  }
 
   $("download").onclick = () => {
     const url = URL.createObjectURL(new Blob([JSON.stringify(c, null, 2)], { type: "application/json" }));
