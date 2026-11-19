@@ -1,0 +1,55 @@
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
+
+const $ = (id) => document.getElementById(id);
+const id = new URLSearchParams(location.search).get("id");
+
+async function main() {
+  if (!id) throw new Error("Missing badge id in the link.");
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/verify?id=${encodeURIComponent(id)}`, {
+    headers: { apikey: SUPABASE_ANON_KEY },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Verification failed.");
+  render(data);
+}
+
+function render({ credential: c, verified, revoked, revoked_reason, errors }) {
+  const a = c.credentialSubject.achievement;
+  const person = c.credentialSubject.identifier.find((i) => i.identityType === "name");
+  const date = new Date(c.validFrom);
+
+  // Revoked wins over valid: a revoked badge must never look fine.
+  const st = $("status");
+  if (revoked) { st.textContent = "REVOKED"; st.className = "status bad"; $("reason").textContent = revoked_reason || ""; }
+  else if (verified) { st.textContent = "VALID"; st.className = "status ok"; }
+  else { st.textContent = "INVALID"; st.className = "status bad"; $("reason").textContent = errors.join(" "); }
+
+  $("name").textContent = a.name;
+  $("description").textContent = a.description || "";
+  $("criteria").textContent = a.criteria?.narrative || "";
+  $("recipient").textContent = person?.identityHash || "";
+  $("date").textContent = date.toLocaleDateString();
+  const issuer = $("issuer");
+  issuer.textContent = c.issuer.name;
+  if (c.issuer.url) issuer.href = c.issuer.url;
+  if (a.image?.id) { $("image").src = a.image.id; $("image").alt = a.name; $("image").hidden = false; }
+
+  $("download").onclick = () => {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(c, null, 2)], { type: "application/json" }));
+    const link = Object.assign(document.createElement("a"), { href: url, download: `badge-${id}.json` });
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const q = new URLSearchParams({
+    startTask: "CERTIFICATION_NAME", name: a.name, organizationName: c.issuer.name,
+    issueYear: date.getFullYear(), issueMonth: date.getMonth() + 1,
+    certUrl: location.href, certId: id,
+  });
+  $("linkedin").href = `https://www.linkedin.com/profile/add?${q}`;
+
+  $("loading").hidden = true;
+  $("result").hidden = false;
+}
+
+main().catch((e) => { $("loading").textContent = e.message; $("loading").className = "bad"; });

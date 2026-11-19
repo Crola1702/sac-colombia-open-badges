@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Issuer admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>Issuer admin</h1>
+  <p id="msg" role="status"></p>
+
+  <section id="login" hidden>
+    <h2>Sign in</h2>
+    <form id="login-form">
+      <label for="login-email">Email</label>
+      <input id="login-email" type="email" required autocomplete="email">
+      <p><button>Send magic link</button></p>
+    </form>
+  </section>
+
+  <div id="app" hidden>
+    <p class="row"><span id="who" class="muted"></span> <button id="logout" class="secondary" type="button">Sign out</button></p>
+
+    <section>
+      <h2>Badge types</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Name</th><th>Slug</th><th>Status</th><th></th></tr></thead>
+        <tbody id="types"></tbody>
+      </table></div>
+      <h3 id="type-title">New badge type</h3>
+      <form id="type-form">
+        <input type="hidden" id="t-id">
+        <label for="t-name">Name</label><input id="t-name" required>
+        <label for="t-slug">Slug (lowercase, dashes)</label><input id="t-slug" required pattern="[a-z0-9-]+">
+        <label for="t-desc">Description</label><textarea id="t-desc" required rows="2"></textarea>
+        <label for="t-criteria">Criteria (narrative)</label><textarea id="t-criteria" required rows="2"></textarea>
+        <label for="t-image">Image URL (optional, public)</label><input id="t-image" type="url">
+        <label for="t-atype">Achievement type (OB3 value)</label><input id="t-atype" value="Badge" required>
+        <p class="row"><button>Save</button><button type="button" id="t-reset" class="secondary">Clear</button></p>
+      </form>
+    </section>
+
+    <section>
+      <h2>Issue badges</h2>
+      <label for="i-type">Badge type</label><select id="i-type"></select>
+      <h3>Single</h3>
+      <form id="single-form">
+        <label for="s-name">Name</label><input id="s-name" required>
+        <label for="s-email">Email</label><input id="s-email" type="email" required>
+        <p><button>Issue and email</button></p>
+      </form>
+      <h3>CSV batch</h3>
+      <p class="muted">Header must be <code>name,email</code>. Max 200 rows per file.</p>
+      <label for="csv-file">CSV file</label><input id="csv-file" type="file" accept=".csv,text/csv">
+      <div id="csv-preview" hidden>
+        <p id="csv-summary"></p>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Check</th></tr></thead><tbody id="csv-rows"></tbody></table></div>
+        <p><button id="csv-send" type="button">Issue valid rows</button></p>
+      </div>
+      <ul id="results"></ul>
+    </section>
+
+    <section>
+      <h2>Issued credentials</h2>
+      <p><button id="reload" class="secondary" type="button">Reload</button></p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Date</th><th>Recipient</th><th>Badge</th><th>Email</th><th>Status</th><th></th></tr></thead>
+        <tbody id="creds"></tbody>
+      </table></div>
+    </section>
+  </div>
+</main>
+<script type="module" src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Claim your badge</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>Claim your badge</h1>
+  <p id="msg" role="status">Loading...</p>
+  <div id="claim" hidden>
+    <p class="muted">Awarded by <span id="client"></span> through SAC Team IEEE Colombia.</p>
+    <img id="image" class="badge-img" alt="" hidden>
+    <h2 id="name"></h2>
+    <p id="description"></p>
+    <p><strong>Criteria:</strong> <span id="criteria"></span></p>
+    <form id="form">
+      <label for="f-name">Your name (shown on the badge)</label><input id="f-name" required maxlength="200" autocomplete="name">
+      <label for="f-email">Your email (we send the badge link here)</label><input id="f-email" type="email" required autocomplete="email">
+      <p class="muted">Privacy: we store your name and email, and the badge record, so we can show the badge on its verification page, resend it, and revoke or correct it if needed. The public badge page shows your name; your email is stored only as a salted hash in the public badge and in plain text only in our private records.</p>
+      <p><button id="submit">Claim badge</button></p>
+    </form>
+  </div>
+  <p id="done" hidden>Badge issued. <a id="verify-link">View your badge</a>. <span id="mail-note"></span></p>
+</main>
+<script type="module" src="claim.js"></script>
+</body>
+</html>

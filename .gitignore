@@ -1,0 +1,10 @@
+node_modules/
+.env
+*.key
+# Written by scripts/generate-key.mjs only if you opt in; never commit private keys.
+private-key*.txt
+supabase/.temp/
+# Generated at deploy time from repo variables
+web/config.js
+# Local Brevo credentials
+.brevo-*

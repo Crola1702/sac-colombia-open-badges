@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verify badge</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>Badge verification</h1>
+  <p id="loading" role="status">Verifying...</p>
+  <div id="result" hidden>
+    <p id="status" class="status" role="status"></p>
+    <p id="reason" class="muted"></p>
+    <img id="image" class="badge-img" alt="" hidden>
+    <h2 id="name"></h2>
+    <p id="description"></p>
+    <p><strong>Criteria:</strong> <span id="criteria"></span></p>
+    <p><strong>Awarded to:</strong> <span id="recipient"></span></p>
+    <p><strong>Issued by:</strong> <a id="issuer"></a></p>
+    <p><strong>Date:</strong> <span id="date"></span></p>
+    <div class="row">
+      <button id="download" type="button">Download signed JSON</button>
+      <a id="linkedin" class="btn" target="_blank" rel="noopener">Add to LinkedIn</a>
+    </div>
+    <p class="muted">The downloaded JSON is a standard Open Badges 3.0 credential. You can check it in external OB3 validators, for example the 1EdTech Open Badges validator.</p>
+  </div>
+</main>
+<script type="module" src="verify.js"></script>
+</body>
+</html>
