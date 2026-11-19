@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="t"><title id="t">Voluntario destacado</title>
+<circle cx="256" cy="256" r="232" fill="#00629B"/>
+<circle cx="256" cy="256" r="192" fill="#FFC72C"/>
+<polygon points="256,104 291,206 399,208 313,273 344,377 256,315 168,377 199,273 113,208 221,206" fill="#FFFFFF" stroke="#00629B" stroke-width="12" stroke-linejoin="round"/>
+</svg>

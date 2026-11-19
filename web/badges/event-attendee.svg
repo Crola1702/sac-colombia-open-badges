@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="t"><title id="t">Asistente a evento</title>
+<polygon points="256,20 492,256 256,492 20,256" fill="#00629B" stroke="#00629B" stroke-width="24" stroke-linejoin="round"/>
+<polygon points="256,72 440,256 256,440 72,256" fill="#981D97" stroke="#981D97" stroke-width="16" stroke-linejoin="round"/>
+<rect x="166" y="190" width="180" height="150" rx="16" fill="#FFFFFF"/>
+<rect x="166" y="190" width="180" height="40" rx="16" fill="#00629B"/>
+<rect x="166" y="214" width="180" height="16" fill="#00629B"/>
+<rect x="200" y="172" width="16" height="40" rx="8" fill="#FFFFFF"/><rect x="296" y="172" width="16" height="40" rx="8" fill="#FFFFFF"/>
+<circle cx="256" cy="286" r="26" fill="#981D97"/>
+</svg>

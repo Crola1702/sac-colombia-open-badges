@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="t"><title id="t">Participante de pruebas</title>
+<polygon points="256,24 457,140 457,372 256,488 55,372 55,140" fill="#00629B"/>
+<polygon points="256,72 415,164 415,348 256,440 97,348 97,164" fill="#00A3AD"/>
+<circle cx="256" cy="256" r="104" fill="#FFFFFF"/>
+<polyline points="206,258 242,294 310,222" fill="none" stroke="#00629B" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
