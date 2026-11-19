@@ -56,3 +56,4 @@ th { font-weight:700; }
 .badge-img { max-width:200px; height:auto; }
 .status { font-weight:700; font-size:1rem; }
 [hidden] { display:none !important; }
+@media (max-width:480px) { .site-header a + a { display:none; } }
