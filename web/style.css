@@ -1,30 +1,58 @@
-:root { --fg:#1b1f24; --bg:#fff; --muted:#5b6570; --line:#d0d7de; --brand:#00629b; --ok:#116329; --bad:#a40e26; --warn:#8a4600; }
-@media (prefers-color-scheme: dark) {
-  :root { --fg:#e6edf3; --bg:#0d1117; --muted:#9aa4af; --line:#30363d; --brand:#58a6ff; --ok:#56d364; --bad:#ff7b72; --warn:#e3b341; }
+/* Visual style mirrors the IEEE Colombia students wiki (MkDocs Material + IEEE blue), without the framework. Light only, like the wiki. */
+:root {
+  --brand:#00629B; --brand-light:#3385B5; --brand-dark:#004B77;
+  --fg:#000000de; --muted:#0000008a; --lighter:#00000052; --line:#00000012;
+  --bg:#fff; --code-bg:#f5f5f5; --footer-bg:#000000de;
+  --ok:#00a152; --bad:#d32f2f; --warn:#e65100;
+  --shadow:0 .2rem .5rem #0000000d, 0 0 .05rem #0000001a;
 }
-* { box-sizing: border-box; }
-body { margin:0; font:16px/1.5 system-ui,sans-serif; color:var(--fg); background:var(--bg); }
-main { max-width:60rem; margin:0 auto; padding:1rem; }
-h1,h2 { line-height:1.2; }
-a { color:var(--brand); }
-label { display:block; margin:.5rem 0 .2rem; font-weight:600; }
-input,select,textarea,button { font:inherit; padding:.5rem; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--fg); max-width:100%; }
-input,select,textarea { width:100%; }
+* { box-sizing:border-box; }
+html { font-size:125%; }
+body { margin:0; min-height:100vh; display:flex; flex-direction:column; font:.8rem/1.6 "IBM Plex Sans",-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--fg); background:var(--bg); }
+code { font-family:"IBM Plex Mono",monospace; background:var(--code-bg); padding:0 .2em; border-radius:.1rem; }
+
+/* Header bar and footer, same pattern as the wiki. */
+.site-header { background:var(--brand); color:#fff; box-shadow:0 0 .2rem #0000001a, 0 .2rem .4rem #0003; }
+.site-header .bar, .site-footer .bar { max-width:80rem; margin:0 auto; padding:0 .8rem; display:flex; align-items:center; gap:.8rem; }
+.site-header .bar { height:2.4rem; }
+.site-header img { height:1.2rem; width:auto; display:block; }
+.site-header a { color:#fff; text-decoration:none; font-size:.9rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.site-header a:first-child { flex:none; }
+.site-footer { margin-top:auto; background:var(--footer-bg); color:#ffffffb3; font-size:.64rem; }
+.site-footer .bar { display:block; padding:.8rem; }
+.site-footer a { color:#fff; }
+
+main { width:100%; max-width:61rem; margin:0 auto; padding:1.2rem .8rem 2rem; }
+h1 { font-size:1.6rem; font-weight:300; letter-spacing:-.01em; line-height:1.3; color:var(--muted); margin:0 0 1.25em; }
+h2 { font-size:1.1rem; font-weight:300; line-height:1.4; margin:1.6em 0 .64em; }
+h3 { font-size:.9rem; font-weight:400; margin:1.6em 0 .8em; }
+a { color:var(--brand); text-decoration:none; }
+a:hover { text-decoration:underline; }
+
+label { display:block; margin:.6rem 0 .2rem; font-weight:700; font-size:.7rem; }
+input,select,textarea,button,a.btn { font:inherit; max-width:100%; }
+input,select,textarea { width:100%; padding:.4rem .5rem; border:1px solid var(--lighter); border-radius:.1rem; background:var(--bg); color:var(--fg); }
+input:focus,select:focus,textarea:focus { border-color:var(--brand); outline:none; box-shadow:0 0 0 .1rem #00629b33; }
 input[type=checkbox] { width:auto; }
-button { cursor:pointer; background:var(--brand); color:#fff; border-color:var(--brand); }
-@media (prefers-color-scheme: dark) { button { color:#0d1117; } }
-button.secondary { background:transparent; color:var(--brand); }
+
+/* Buttons follow Material's .md-button: filled primary by default, outlined as secondary. */
+button,a.btn { display:inline-block; cursor:pointer; padding:.5em 1.4em; border:.1rem solid var(--brand); border-radius:.1rem; background:var(--brand); color:#fff; font-weight:700; text-decoration:none; transition:background .125s, border-color .125s, color .125s; }
+button:hover,a.btn:hover { background:var(--brand-dark); border-color:var(--brand-dark); text-decoration:none; }
+button.secondary,a.btn { background:transparent; color:var(--brand); }
+button.secondary:hover,a.btn:hover { background:var(--brand); color:#fff; }
 button.danger { background:var(--bad); border-color:var(--bad); }
 button:disabled { opacity:.5; cursor:not-allowed; }
-:focus-visible { outline:3px solid var(--brand); outline-offset:2px; }
-section { border:1px solid var(--line); border-radius:8px; padding:1rem; margin:1rem 0; }
+:focus-visible { outline:.1rem solid var(--brand); outline-offset:.1rem; }
+
+/* Sections look like Material admonition cards. */
+section { background:var(--bg); border:1px solid var(--line); border-left:.2rem solid var(--brand); border-radius:.2rem; box-shadow:var(--shadow); padding:.6rem .8rem; margin:1.5625em 0; }
 .table-wrap { overflow-x:auto; }
-table { border-collapse:collapse; width:100%; }
-th,td { text-align:left; padding:.4rem; border-bottom:1px solid var(--line); vertical-align:top; }
+table { border-collapse:collapse; width:100%; font-size:.7rem; }
+th,td { text-align:left; padding:.5em .8em; border-bottom:1px solid var(--line); vertical-align:top; }
+th { font-weight:700; }
 .muted { color:var(--muted); }
 .ok { color:var(--ok); } .bad { color:var(--bad); } .warn { color:var(--warn); }
 .row { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; }
 .badge-img { max-width:200px; height:auto; }
-.status { font-weight:700; font-size:1.2rem; }
+.status { font-weight:700; font-size:1rem; }
 [hidden] { display:none !important; }
-a.btn { display:inline-block; padding:.5rem .8rem; border:1px solid var(--brand); border-radius:6px; text-decoration:none; }
