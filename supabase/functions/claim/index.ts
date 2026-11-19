@@ -7,24 +7,24 @@ import { issuerConfig } from "../_shared/env.ts";
 import { EMAIL_RE, issueCredential, verifyUrl } from "../_shared/issuing.ts";
 
 const fail = (code: string, message: string, status: number) => json({ error: code, message }, status);
-const redeemed = () => new ClaimError("already_redeemed", "Token already used", 409);
-const issued = () => new ClaimError("already_issued", "A badge was already issued for this completion", 409);
+const redeemed = () => new ClaimError("already_redeemed", "El enlace ya fue utilizado", 409);
+const issued = () => new ClaimError("already_issued", "Ya se emitió una insignia para esta participación", 409);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "POST") return fail("invalid_input", "POST only", 400);
+  if (req.method !== "POST") return fail("invalid_input", "Solo se admite POST", 400);
 
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   try {
     let body: any;
-    try { body = await req.json(); } catch { throw new ClaimError("invalid_input", "Invalid JSON", 400); }
+    try { body = await req.json(); } catch { throw new ClaimError("invalid_input", "JSON no válido", 400); }
     if (typeof body?.token !== "string" || !["preview", "redeem"].includes(body?.action)) {
-      throw new ClaimError("invalid_input", "action and token are required", 400);
+      throw new ClaimError("invalid_input", "Se requieren action y token", 400);
     }
     const name = String(body.name ?? "").trim();
     const email = String(body.email ?? "").trim().toLowerCase();
     if (body.action === "redeem" && (!name || name.length > 200 || !EMAIL_RE.test(email))) {
-      throw new ClaimError("invalid_input", "A valid name and email are required", 400);
+      throw new ClaimError("invalid_input", "Se requiere un nombre y un correo válidos", 400);
     }
 
     const { client, claims } = await verifyClaimToken(body.token, async (iss) =>
@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
 
     const { data: a } = await db.from("achievements").select("*").eq("slug", claims.badge).eq("active", true).maybeSingle();
     if (!a || !client.allowed_badges.includes(claims.badge)) {
-      throw new ClaimError("badge_not_allowed", "This system cannot award that badge", 403);
+      throw new ClaimError("badge_not_allowed", "Este sistema no puede otorgar esa insignia", 403);
     }
 
     // Friendly early checks; the unique constraints below are what really enforce single use.
@@ -74,6 +74,6 @@ Deno.serve(async (req) => {
   } catch (e) {
     if (e instanceof ClaimError) return fail(e.code, e.message, e.status);
     console.error(e);
-    return json({ error: "server_error", message: "Unexpected error" }, 500);
+    return json({ error: "server_error", message: "Error inesperado" }, 500);
   }
 });

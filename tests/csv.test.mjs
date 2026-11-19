@@ -18,7 +18,7 @@ test("skips blank lines and keeps a last row without newline", () => {
 
 test("parseRecipients validates emails, duplicates and header", () => {
   const r = parseRecipients("Name,Email\nAda,ADA@x.co\n,b@x.co\nBob,not-an-email\nAda2,ada@x.co");
-  assert.deepEqual(r.map((x) => x.error), [null, "Missing name", "Invalid email", "Duplicate email in file"]);
+  assert.deepEqual(r.map((x) => x.error), [null, "Falta el nombre", "Correo no válido", "Correo repetido en el archivo"]);
   assert.equal(r[0].email, "ada@x.co");
-  assert.throws(() => parseRecipients("foo,bar\n1,2"), /header/);
+  assert.throws(() => parseRecipients("foo,bar\n1,2"), /encabezado/);
 });

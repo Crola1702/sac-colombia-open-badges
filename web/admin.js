@@ -35,7 +35,7 @@ $("login-form").onsubmit = async (e) => {
     options: { shouldCreateUser: false, emailRedirectTo: location.origin + location.pathname },
   });
   // Same message either way so the form does not reveal who is an issuer.
-  say(error ? "Could not send the link. Check the email and try again." : "If this email is authorized, a sign-in link is on its way.", error ? "bad" : "ok");
+  say(error ? "No se pudo enviar el enlace. Revise el correo e intente de nuevo." : "Si este correo está autorizado, recibirá un enlace de acceso.", error ? "bad" : "ok");
 };
 $("logout").onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
@@ -44,8 +44,8 @@ async function start() {
   if (!session) { $("login").hidden = false; return; }
   // RLS only lets active issuers read this table, so a row means authorized.
   const { data: me } = await sb.from("issuers").select("email").eq("email", session.user.email.toLowerCase()).maybeSingle();
-  if (!me) { say("This account is not an authorized issuer.", "bad"); $("logout").closest("p").hidden = false; $("app").hidden = false; document.querySelectorAll("#app section").forEach((s) => (s.hidden = true)); $("who").textContent = session.user.email; return; }
-  $("who").textContent = `Signed in as ${session.user.email}`;
+  if (!me) { say("Esta cuenta no está autorizada para emitir insignias.", "bad"); $("logout").closest("p").hidden = false; $("app").hidden = false; document.querySelectorAll("#app section").forEach((s) => (s.hidden = true)); $("who").textContent = session.user.email; return; }
+  $("who").textContent = `Sesión iniciada como ${session.user.email}`;
   $("app").hidden = false;
   await Promise.all([loadTypes(), loadCreds()]);
 }
@@ -58,20 +58,20 @@ async function loadTypes() {
   types = data;
   $("types").replaceChildren(...types.map((t) => h("tr", {},
     h("td", {}, t.name), h("td", {}, t.slug),
-    h("td", { className: t.active ? "ok" : "muted" }, t.active ? "Active" : "Inactive"),
+    h("td", { className: t.active ? "ok" : "muted" }, t.active ? "Activo" : "Inactivo"),
     h("td", { className: "row" },
-      h("button", { className: "secondary", onclick: () => editType(t) }, "Edit"),
-      h("button", { className: "secondary", onclick: () => setActive(t, !t.active) }, t.active ? "Deactivate" : "Activate")))));
+      h("button", { className: "secondary", onclick: () => editType(t) }, "Editar"),
+      h("button", { className: "secondary", onclick: () => setActive(t, !t.active) }, t.active ? "Desactivar" : "Activar")))));
   $("i-type").replaceChildren(...types.filter((t) => t.active).map((t) => h("option", { value: t.id }, t.name)));
 }
 function editType(t) {
-  $("type-title").textContent = `Edit: ${t.name}`;
+  $("type-title").textContent = `Editar: ${t.name}`;
   $("t-id").value = t.id; $("t-name").value = t.name; $("t-slug").value = t.slug;
   $("t-desc").value = t.description; $("t-criteria").value = t.criteria;
   $("t-image").value = t.image_url || ""; $("t-atype").value = t.achievement_type;
   $("t-name").focus();
 }
-function resetType() { $("type-form").reset(); $("t-id").value = ""; $("type-title").textContent = "New badge type"; }
+function resetType() { $("type-form").reset(); $("t-id").value = ""; $("type-title").textContent = "Nuevo tipo de insignia"; }
 $("t-reset").onclick = resetType;
 async function setActive(t, active) {
   const { error } = await sb.from("achievements").update({ active }).eq("id", t.id);
@@ -87,15 +87,15 @@ $("type-form").onsubmit = async (e) => {
   const id = $("t-id").value;
   const { error } = id ? await sb.from("achievements").update(row).eq("id", id) : await sb.from("achievements").insert(row);
   if (error) return say(error.message, "bad");
-  say("Badge type saved.", "ok"); resetType(); loadTypes();
+  say("Tipo de insignia guardado.", "ok"); resetType(); loadTypes();
 };
 
 // ---- issuing ----
 function showResults(results) {
   $("results").replaceChildren(...results.map((r) => h("li", { className: !r.ok ? "bad" : r.email_status === "failed" ? "warn" : "ok" },
-    !r.ok ? `${r.email}: not issued (${r.error})`
-      : r.email_status === "failed" ? `${r.email}: issued, email FAILED (${r.email_error}). Use Resend below.`
-      : `${r.email}: issued and emailed`)));
+    !r.ok ? `${r.email}: no emitida (${r.error})`
+      : r.email_status === "failed" ? `${r.email}: emitida, pero el correo FALLÓ (${r.email_error}). Use Reenviar en la lista inferior.`
+      : `${r.email}: emitida y enviada por correo`)));
   loadCreds();
 }
 $("single-form").onsubmit = async (e) => {
@@ -112,7 +112,7 @@ $("csv-file").onchange = async (e) => {
     csvRows = parseRecipients(await e.target.files[0].text());
   } catch (err) { csvRows = []; $("csv-preview").hidden = true; return say(err.message, "bad"); }
   const valid = csvRows.filter((r) => !r.error).length;
-  $("csv-summary").textContent = `${csvRows.length} rows, ${valid} valid.` + (valid > MAX_BATCH ? ` Too many: max ${MAX_BATCH}.` : "");
+  $("csv-summary").textContent = `${csvRows.length} filas, ${valid} válidas.` + (valid > MAX_BATCH ? ` Demasiadas: máximo ${MAX_BATCH}.` : "");
   $("csv-rows").replaceChildren(...csvRows.map((r) => h("tr", {}, h("td", {}, r.name), h("td", {}, r.email), h("td", { className: r.error ? "bad" : "ok" }, r.error || "OK"))));
   $("csv-send").disabled = valid === 0 || valid > MAX_BATCH;
   $("csv-preview").hidden = false;
@@ -123,11 +123,11 @@ $("csv-send").onclick = async () => {
   const all = [];
   try {
     for (let i = 0; i < todo.length; i += CHUNK) {
-      say(`Issuing ${Math.min(i + CHUNK, todo.length)} of ${todo.length}...`);
+      say(`Emitiendo ${Math.min(i + CHUNK, todo.length)} de ${todo.length}...`);
       all.push(...(await callIssue({ achievement_id: $("i-type").value, recipients: todo.slice(i, i + CHUNK) })).results);
     }
     say("Done.", "ok");
-  } catch (err) { say(`Stopped: ${err.message}. Rows already issued are listed below.`, "bad"); }
+  } catch (err) { say(`Proceso detenido: ${err.message}. Las filas ya emitidas aparecen en la lista inferior.`, "bad"); }
   showResults(all);
 };
 
@@ -138,38 +138,38 @@ async function loadCreds() {
     .order("issued_at", { ascending: false }).limit(300);
   if (error) return say(error.message, "bad");
   $("creds").replaceChildren(...data.map((c) => h("tr", {},
-    h("td", {}, new Date(c.issued_at).toLocaleString()),
+    h("td", {}, new Date(c.issued_at).toLocaleString("es-CO")),
     h("td", {}, `${c.recipient_name} <${c.recipient_email}>`),
     h("td", {}, c.achievements?.name ?? ""),
     h("td", { className: c.email_status === "sent" ? "ok" : "bad", title: c.email_error || "" },
-      c.email_status === "sent" ? "Sent" : `Failed${c.email_error ? `: ${c.email_error}` : ""}`),
-    h("td", { className: c.revoked_at ? "bad" : "ok" }, c.revoked_at ? `Revoked${c.revoked_reason ? `: ${c.revoked_reason}` : ""}` : "Valid"),
+      c.email_status === "sent" ? "Enviado" : `Fallido${c.email_error ? `: ${c.email_error}` : ""}`),
+    h("td", { className: c.revoked_at ? "bad" : "ok" }, c.revoked_at ? `Revocada${c.revoked_reason ? `: ${c.revoked_reason}` : ""}` : "Válida"),
     h("td", { className: "row" },
-      h("a", { href: `verify.html?id=${c.id}`, target: "_blank", rel: "noopener" }, "Open"),
-      h("button", { className: "secondary", onclick: (ev) => reissueForm(c, ev.target.closest("td")) }, "Reissue"),
+      h("a", { href: `verify.html?id=${c.id}`, target: "_blank", rel: "noopener" }, "Abrir"),
+      h("button", { className: "secondary", onclick: (ev) => reissueForm(c, ev.target.closest("td")) }, "Reemitir"),
       ...(c.revoked_at ? [] : [
-        h("button", { className: "secondary", onclick: () => resend(c.id) }, "Resend"),
-        h("button", { className: "danger", onclick: () => revoke(c) }, "Revoke")])))));
+        h("button", { className: "secondary", onclick: () => resend(c.id) }, "Reenviar"),
+        h("button", { className: "danger", onclick: () => revoke(c) }, "Revocar")])))));
 }
 async function resend(id) {
   try {
     const r = await callIssue({ action: "resend", credential_id: id });
-    say(r.email_status === "sent" ? "Email sent." : `Email failed: ${r.error}`, r.email_status === "sent" ? "ok" : "bad");
+    say(r.email_status === "sent" ? "Correo enviado." : `El correo falló: ${r.error}`, r.email_status === "sent" ? "ok" : "bad");
   } catch (err) { say(err.message, "bad"); }
   loadCreds();
 }
 // Small inline form (no prompt) to correct name/email; the old credential is revoked as "Reissued".
 function reissueForm(c, cell) {
-  const name = h("input", { value: c.recipient_name, required: true, "aria-label": "Name" });
-  const email = h("input", { type: "email", value: c.recipient_email, required: true, "aria-label": "Email" });
+  const name = h("input", { value: c.recipient_name, required: true, "aria-label": "Nombre" });
+  const email = h("input", { type: "email", value: c.recipient_email, required: true, "aria-label": "Correo electrónico" });
   const form = h("form", {}, name, email,
-    h("button", {}, "Reissue"),
-    h("button", { type: "button", className: "secondary", onclick: () => form.remove() }, "Cancel"));
+    h("button", {}, "Reemitir"),
+    h("button", { type: "button", className: "secondary", onclick: () => form.remove() }, "Cancelar"));
   form.onsubmit = async (e) => {
     e.preventDefault();
     try {
       await callIssue({ action: "reissue", credential_id: c.id, name: name.value, email: email.value });
-      say("Reissued. The old credential is now revoked.", "ok");
+      say("Insignia reemitida. La anterior quedó revocada.", "ok");
     } catch (err) { say(err.message, "bad"); }
     loadCreds();
   };
@@ -177,7 +177,7 @@ function reissueForm(c, cell) {
   name.focus();
 }
 async function revoke(c) {
-  const reason = prompt(`Reason for revoking the badge of ${c.recipient_name}?`);
+  const reason = prompt(`¿Motivo de la revocación de la insignia de ${c.recipient_name}?`);
   if (!reason) return;
   const { error } = await sb.rpc("revoke_credential", { p_id: c.id, p_reason: reason });
   if (error) say(error.message, "bad"); else loadCreds();

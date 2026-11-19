@@ -11,23 +11,26 @@ async function api(body) {
     headers: { "content-type": "application/json", apikey: SUPABASE_ANON_KEY },
     body: JSON.stringify({ token, ...body }),
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(MESSAGES[data.error] || data.message || "Something went wrong.");
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(MESSAGES[data.error] || FALLBACK);
   return data;
 }
 
+// Contract error codes stay as-is; only the text shown to the person is Spanish.
 const MESSAGES = {
-  invalid_token: "This claim link is not valid.",
-  token_expired: "This claim link has expired.",
-  badge_not_allowed: "This link cannot award that badge.",
-  already_redeemed: "This claim link was already used.",
-  already_issued: "A badge was already issued for this completion. Contact the SAC Team if something is wrong.",
+  invalid_input: "Revise su nombre y correo electrónico e intente de nuevo.",
+  invalid_token: "Este enlace de reclamación no es válido.",
+  token_expired: "Este enlace de reclamación expiró.",
+  badge_not_allowed: "Este enlace no puede otorgar esa insignia.",
+  already_redeemed: "Este enlace de reclamación ya fue utilizado.",
+  already_issued: "Esta insignia ya fue emitida para esta participación. Si algo no es correcto, comuníquese con el SAC Team.",
 };
+const FALLBACK = "Ocurrió un error. Intente de nuevo más tarde.";
 
 function fail(e) { $("msg").textContent = e.message; $("msg").className = "bad"; $("msg").hidden = false; }
 
 async function main() {
-  if (!token) throw new Error("This page needs a claim link from the system that gave you the badge.");
+  if (!token) throw new Error("Esta página requiere el enlace de reclamación del sistema que le otorgó la insignia.");
   const { badge, client } = await api({ action: "preview" });
   $("client").textContent = client.name;
   $("name").textContent = badge.name;
@@ -44,7 +47,7 @@ $("form").onsubmit = async (e) => {
   try {
     const r = await api({ action: "redeem", name: $("f-name").value, email: $("f-email").value });
     $("verify-link").href = r.verify_url;
-    $("mail-note").textContent = r.email_status === "sent" ? "We also emailed you the link." : "We could not send the email, so save this link.";
+    $("mail-note").textContent = r.email_status === "sent" ? "También le enviamos el enlace por correo." : "No pudimos enviar el correo, por favor guarde este enlace.";
     $("claim").hidden = true;
     $("done").hidden = false;
   } catch (err) { $("submit").disabled = false; fail(err); }

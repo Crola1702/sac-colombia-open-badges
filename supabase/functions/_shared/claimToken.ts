@@ -31,13 +31,13 @@ export async function verifyClaimToken(
     if (h.alg !== "EdDSA") throw new Error("alg");
     kid = h.kid;
     iss = decodeJwt(token).iss; // unverified: only used to pick the key set
-  } catch { throw bad("Malformed token"); }
-  if (!kid || typeof iss !== "string") throw bad("Missing kid or iss");
+  } catch { throw bad("Token mal formado"); }
+  if (!kid || typeof iss !== "string") throw bad("Faltan kid o iss");
 
   const client = await getClient(iss);
-  if (!client || !client.active) throw bad("Unknown issuer");
+  if (!client || !client.active) throw bad("Emisor desconocido");
   const jwk = client.jwks.keys.find((k) => k.kid === kid);
-  if (!jwk) throw bad("Unknown key id");
+  if (!jwk) throw bad("Clave desconocida");
 
   let payload;
   try {
@@ -45,16 +45,16 @@ export async function verifyClaimToken(
       audience: AUDIENCE, algorithms: ["EdDSA"], clockTolerance: SKEW_SECONDS, currentDate: now,
     }));
   } catch (e) {
-    if (e instanceof errors.JWTExpired) throw new ClaimError("token_expired", "Token expired", 401);
-    throw bad("Invalid signature or audience");
+    if (e instanceof errors.JWTExpired) throw new ClaimError("token_expired", "El token expiró", 401);
+    throw bad("Firma o audiencia no válida");
   }
 
   const { sub, badge, jti, iat, exp, evidence } = payload;
   const str = (v: unknown, max: number) => typeof v === "string" && v.length > 0 && v.length <= max;
-  if (!str(sub, 128) || !str(badge, 128) || !str(jti, 128)) throw bad("Missing or invalid sub, badge or jti");
-  if (typeof iat !== "number" || typeof exp !== "number") throw bad("Missing iat or exp");
-  if (exp - iat > client.max_token_age_seconds) throw bad("Token lifetime too long");
-  if (evidence !== undefined && !str(evidence, 200)) throw bad("Invalid evidence");
+  if (!str(sub, 128) || !str(badge, 128) || !str(jti, 128)) throw bad("Faltan sub, badge o jti, o no son válidos");
+  if (typeof iat !== "number" || typeof exp !== "number") throw bad("Faltan iat o exp");
+  if (exp - iat > client.max_token_age_seconds) throw bad("La vigencia del token es demasiado larga");
+  if (evidence !== undefined && !str(evidence, 200)) throw bad("Evidencia no válida");
 
   return { client, claims: { iss, sub, badge, jti, iat, exp, evidence } as ClaimClaims };
 }

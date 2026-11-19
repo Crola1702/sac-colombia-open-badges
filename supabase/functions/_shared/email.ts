@@ -26,12 +26,15 @@ export async function sendEmail(to: { name: string; email: string }, subject: st
 const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
+// Recipient-facing copy is Spanish (formal "usted").
 export function badgeEmail(name: string, badge: string, link: string) {
   return {
-    subject: `Your badge: ${badge}`,
-    html: `<p>Hi ${esc(name)},</p>
-<p>SAC Team IEEE Colombia has awarded you the badge <strong>${esc(badge)}</strong>.</p>
-<p><a href="${esc(link)}">View and verify your badge</a></p>
-<p>On that page you can download the signed credential and add it to your LinkedIn profile.</p>`,
+    subject: `Ha recibido la insignia: ${badge}`,
+    html: `<!doctype html><html lang="es"><body>
+<p>Hola, ${esc(name)}:</p>
+<p>El SAC Team IEEE Colombia le ha otorgado la insignia <strong>${esc(badge)}</strong>.</p>
+<p><a href="${esc(link)}">Ver y verificar su insignia</a></p>
+<p>En esa página puede descargar la credencial firmada y agregarla a su perfil de LinkedIn.</p>
+</body></html>`,
   };
 }

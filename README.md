@@ -56,7 +56,7 @@ tests/      node tests for the CSV parser
 
 ## Reissue
 
-Credential has a wrong name or email? In the credentials list click Reissue, edit the fields inline and submit. The function issues a new credential for the same badge (`credentials.replaces` points at the old one), emails it, then revokes the old one with reason "Reissued". The old verify link then shows REVOKED. This is also the path for a revoked claim, because the token can never be redeemed again (`already_issued`).
+Credential has a wrong name or email? In the credentials list click Reissue, edit the fields inline and submit. The function issues a new credential for the same badge (`credentials.replaces` points at the old one), emails it, then revokes the old one with reason "Reemitida". The old verify link then shows REVOKED. This is also the path for a revoked claim, because the token can never be redeemed again (`already_issued`).
 
 ## Claim API (contract v1)
 

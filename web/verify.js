@@ -4,12 +4,12 @@ const $ = (id) => document.getElementById(id);
 const id = new URLSearchParams(location.search).get("id");
 
 async function main() {
-  if (!id) throw new Error("Missing badge id in the link.");
+  if (!id) throw new Error("Falta el identificador de la insignia en el enlace.");
   const res = await fetch(`${SUPABASE_URL}/functions/v1/verify?id=${encodeURIComponent(id)}`, {
     headers: { apikey: SUPABASE_ANON_KEY },
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Verification failed.");
+  if (!res.ok) throw new Error(data.error || "No se pudo verificar la insignia.");
   render(data);
 }
 
@@ -20,15 +20,15 @@ function render({ credential: c, verified, revoked, revoked_reason, errors }) {
 
   // Revoked wins over valid: a revoked badge must never look fine.
   const st = $("status");
-  if (revoked) { st.textContent = "REVOKED"; st.className = "status bad"; $("reason").textContent = revoked_reason || ""; }
-  else if (verified) { st.textContent = "VALID"; st.className = "status ok"; }
-  else { st.textContent = "INVALID"; st.className = "status bad"; $("reason").textContent = errors.join(" "); }
+  if (revoked) { st.textContent = "Revocada"; st.className = "status bad"; $("reason").textContent = revoked_reason || ""; }
+  else if (verified) { st.textContent = "Válida"; st.className = "status ok"; }
+  else { st.textContent = "No válida"; st.className = "status bad"; $("reason").textContent = errors.join(" "); }
 
   $("name").textContent = a.name;
   $("description").textContent = a.description || "";
   $("criteria").textContent = a.criteria?.narrative || "";
   $("recipient").textContent = person?.identityHash || "";
-  $("date").textContent = date.toLocaleDateString();
+  $("date").textContent = date.toLocaleDateString("es-CO", { year: "numeric", month: "long", day: "numeric" });
   const issuer = $("issuer");
   issuer.textContent = c.issuer.name;
   if (c.issuer.url) issuer.href = c.issuer.url;

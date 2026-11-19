@@ -29,15 +29,15 @@ export function parseRecipients(text) {
   const [header, ...rows] = parseCsv(text);
   const cols = (header || []).map((h) => h.trim().toLowerCase());
   const ni = cols.indexOf("name"), ei = cols.indexOf("email");
-  if (ni < 0 || ei < 0) throw new Error('CSV header must be "name,email"');
+  if (ni < 0 || ei < 0) throw new Error('El encabezado del CSV debe ser "name,email"');
   const seen = new Set();
   return rows.map((r) => {
     const name = (r[ni] ?? "").trim();
     const email = (r[ei] ?? "").trim().toLowerCase();
     let error = null;
-    if (!name) error = "Missing name";
-    else if (!EMAIL_RE.test(email)) error = "Invalid email";
-    else if (seen.has(email)) error = "Duplicate email in file";
+    if (!name) error = "Falta el nombre";
+    else if (!EMAIL_RE.test(email)) error = "Correo no válido";
+    else if (seen.has(email)) error = "Correo repetido en el archivo";
     seen.add(email);
     return { name, email, error };
   });

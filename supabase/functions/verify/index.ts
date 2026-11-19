@@ -6,10 +6,10 @@ import { corsHeaders, json } from "../_shared/cors.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "GET") return json({ error: "Method not allowed" }, 405);
+  if (req.method !== "GET") return json({ error: "Método no permitido" }, 405);
 
   const id = new URL(req.url).searchParams.get("id") ?? "";
-  if (!/^[0-9a-f-]{36}$/i.test(id)) return json({ error: "Invalid id" }, 400);
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return json({ error: "Identificador no válido" }, 400);
 
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const { data, error } = await db
@@ -17,8 +17,8 @@ Deno.serve(async (req) => {
     .select("credential, revoked_at, revoked_reason")
     .eq("id", id)
     .maybeSingle();
-  if (error) return json({ error: "Lookup failed" }, 500);
-  if (!data) return json({ error: "Credential not found" }, 404);
+  if (error) return json({ error: "No se pudo consultar la insignia" }, 500);
+  if (!data) return json({ error: "Insignia no encontrada" }, 404);
 
   const { verified, errors } = await verifyCredential(data.credential, {
     did: Deno.env.get("ISSUER_DID")!,
